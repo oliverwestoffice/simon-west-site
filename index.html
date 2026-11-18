@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simon West Films</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Roboto:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:#0c0d0f;color:#fff;font-family:Roboto,system-ui,sans-serif}
+  .hero{position:relative;min-height:100vh;overflow:hidden;
+    background:
+      radial-gradient(ellipse 60% 70% at 62% 35%, rgba(190,120,60,.35), transparent 70%),
+      radial-gradient(ellipse 40% 50% at 20% 80%, rgba(40,70,60,.45), transparent 70%),
+      linear-gradient(180deg,#1b1d1a 0%,#121410 55%,#0b0c0b 100%);}
+  .hero::before{content:"";position:absolute;inset:0;
+    background:repeating-linear-gradient(100deg,rgba(255,255,255,.02) 0 2px,transparent 2px 9px);
+    mix-blend-mode:overlay}
+  .hero::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.45)}
+  header{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:flex-start;padding:4.5vw 8vw 0}
+  .logo{font-family:"Cormorant Garamond",serif;text-align:center;line-height:1}
+  .logo .name{font-size:clamp(28px,3.2vw,52px);font-variant:small-caps;letter-spacing:.04em;padding-bottom:6px;border-bottom:1.5px solid rgba(255,255,255,.85)}
+  .logo .sub{font-size:clamp(14px,1.4vw,24px);letter-spacing:1.1em;margin-top:8px;padding-left:1.1em}
+  nav{display:flex;gap:2.5rem;margin-top:1.2vw}
+  nav a{color:#fff;text-decoration:none;font-weight:700;letter-spacing:.06em;font-size:clamp(13px,1.1vw,18px);opacity:.85}
+  nav a.active,nav a:hover{opacity:1;border-bottom:2px solid #d63a3a;padding-bottom:4px}
+  main{position:relative;z-index:2;padding:10vh 4vw 8vh}
+  h1{font-weight:500;font-size:clamp(30px,3.4vw,58px);margin-bottom:5vh}
+  .row{display:grid;grid-template-columns:repeat(6,1fr);gap:1.4vw;row-gap:2.2vw}
+  .poster{aspect-ratio:2/3;position:relative;overflow:hidden;cursor:pointer;
+    display:flex;flex-direction:column;justify-content:space-between;padding:8% 8% 9%;
+    box-shadow:0 20px 40px rgba(0,0,0,.5);transition:transform .35s ease, box-shadow .35s ease}
+  .poster:hover{transform:translateY(-10px) scale(1.03);box-shadow:0 30px 60px rgba(0,0,0,.7)}
+  .poster .top{font-family:Oswald,sans-serif;font-size:clamp(7px,.6vw,11px);letter-spacing:.35em;opacity:.8;text-align:center}
+  .poster .title{font-family:Oswald,sans-serif;font-weight:700;text-transform:uppercase;line-height:.95;text-align:center;font-size:clamp(16px,1.9vw,34px)}
+  .poster .year{font-family:Oswald,sans-serif;font-size:clamp(8px,.7vw,12px);letter-spacing:.3em;text-align:center;opacity:.85;margin-top:6px}
+  .poster .art{position:absolute;inset:0;z-index:-1}
+  .p1 .art{background:linear-gradient(160deg,#2b3a45,#0e1418 60%),radial-gradient(circle at 50% 30%,#e3a04f55,transparent 50%);background-blend-mode:screen}
+  .p2 .art{background:radial-gradient(circle at 50% 75%,#ff7a1a 0,#a8240e 30%,#2a0b05 70%)}
+  .p3 .art{background:linear-gradient(180deg,#5d4a32,#1c140c),radial-gradient(circle at 30% 30%,#d9b77644,transparent 60%);background-blend-mode:screen}
+  .p4 .art{background:linear-gradient(200deg,#7a8a8f,#1d2427 70%)}
+  .p5 .art{background:radial-gradient(circle at 70% 20%,#ffd36b 0,#c76a1c 25%,#3b1608 65%)}
+  .p6 .art{background:linear-gradient(170deg,#1e3a5a,#081320 70%),radial-gradient(circle at 50% 40%,#5fb0ff44,transparent 60%);background-blend-mode:screen}
+  .poster::after{content:"";position:absolute;inset:0;z-index:-1;
+    background:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 3px)}
+  .poster img.real{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6vw}
+  .clip{aspect-ratio:16/9;position:relative;overflow:hidden;cursor:pointer;
+    background:radial-gradient(circle at 30% 20%,var(--c1),var(--c2) 75%);
+    box-shadow:0 20px 40px rgba(0,0,0,.5);transition:transform .35s ease,box-shadow .35s ease}
+  .clip::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px)}
+  .clip:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 30px 60px rgba(0,0,0,.7)}
+  .clip .play{position:absolute;top:36%;left:50%;transform:translate(-50%,-50%);width:58px;height:58px;border-radius:50%;
+    border:2px solid rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;font-size:20px;padding-left:4px;opacity:.85;transition:opacity .3s}
+  .clip:hover .play{opacity:1;background:rgba(255,255,255,.12)}
+  .clip .meta{position:absolute;left:6%;right:6%;bottom:8%;z-index:1}
+  .clip .who{font-family:Oswald,sans-serif;font-size:clamp(11px,.85vw,15px);letter-spacing:.3em;text-transform:uppercase;opacity:.8}
+  .clip .what{font-family:Oswald,sans-serif;font-weight:700;font-size:clamp(16px,1.6vw,28px);text-transform:uppercase;line-height:1.05}
+  .clip .yr{font-size:clamp(10px,.75vw,13px);letter-spacing:.15em;opacity:.7;margin-top:4px}
+  @media (max-width:900px){.grid{grid-template-columns:1fr 1fr}}
+  .modal{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center}
+  .modal.open{display:flex}
+  .modal .frame{width:min(90vw,160vh);aspect-ratio:16/9;box-shadow:0 30px 80px rgba(0,0,0,.8)}
+  .modal iframe{width:100%;height:100%;border:0}
+  .modal .x{position:absolute;top:24px;right:32px;font-size:34px;color:#fff;cursor:pointer;opacity:.8;background:none;border:0}
+  .pg{position:absolute;opacity:0;pointer-events:none}
+  nav label{color:#fff;font-weight:700;letter-spacing:.06em;font-size:clamp(13px,1.1vw,18px);opacity:.85;cursor:pointer;padding-bottom:4px;border-bottom:2px solid transparent}
+  nav label:hover{opacity:1}
+  .page{display:none}
+  #r-films:checked ~ main #films, #r-mv:checked ~ main #music-videos, #r-cm:checked ~ main #commercials{display:block}
+  #r-films:checked ~ header label[for=r-films], #r-mv:checked ~ header label[for=r-mv], #r-cm:checked ~ header label[for=r-cm]{opacity:1;border-bottom-color:#d63a3a}
+  .poster.soon{outline:1.5px solid #d63a3a;outline-offset:-1.5px}
+  .totals{margin-top:9vh;text-align:center;padding:5vh 0 2vh;border-top:1px solid rgba(255,255,255,.12)}
+  .tlabel{font-family:Oswald,sans-serif;letter-spacing:.45em;font-size:clamp(11px,.9vw,15px);color:#d63a3a;margin-bottom:3vh}
+  .tnums{display:flex;justify-content:center;align-items:center;gap:5vw}
+  .tnum{font-family:"Cormorant Garamond",serif;font-weight:600;font-size:clamp(48px,6vw,104px);line-height:1}
+  .tnum span{font-size:.55em;margin-left:.08em}
+  .tsub{font-family:Oswald,sans-serif;letter-spacing:.3em;text-transform:uppercase;font-size:clamp(10px,.8vw,13px);opacity:.6;margin-top:1.2vh}
+  .tdiv{width:1px;height:clamp(60px,7vw,110px);background:rgba(255,255,255,.2)}
+  .bigline{font-family:"Cormorant Garamond",serif;font-weight:600;white-space:nowrap;font-size:clamp(40px,7vw,128px);line-height:1;
+    background:linear-gradient(180deg,#fff 30%,#e86a6a);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 60px rgba(214,58,58,.25)}
+  .clip.logo::after{display:none}
+  .clip .meta{text-align:left}
+  .clip .play.corner{top:auto;left:auto;bottom:10%;right:5%;transform:none;width:46px;height:46px;font-size:16px}
+  .poster[data-film]{cursor:pointer}
+  .detail[hidden]{display:none}
+  .detail .back{background:none;border:0;color:#d63a3a;font-family:Oswald,sans-serif;letter-spacing:.3em;font-size:13px;cursor:pointer;margin-bottom:4vh;padding:0}
+  .detail .back:hover{color:#fff}
+  .dtop{display:grid;grid-template-columns:minmax(220px,26vw) 1fr;gap:4vw;align-items:end}
+  .dposter{aspect-ratio:2/3;position:relative;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.6)}
+  .dposter .poster{width:100%;height:100%;transform:none!important;box-shadow:none;cursor:default}
+  .dkicker{font-family:Oswald,sans-serif;letter-spacing:.4em;font-size:clamp(11px,.9vw,14px);color:#d63a3a;margin-bottom:1.5vh}
+  .dtitle{font-family:"Cormorant Garamond",serif;font-weight:600;font-size:clamp(40px,5.5vw,96px);line-height:1;margin-bottom:2vh}
+  .dmeta{font-family:Oswald,sans-serif;letter-spacing:.2em;font-size:clamp(12px,1vw,16px);opacity:.75;margin-bottom:5vh}
+  .dlabel{font-family:Oswald,sans-serif;letter-spacing:.45em;font-size:clamp(11px,.85vw,14px);color:#d63a3a;margin-bottom:1.6vh}
+  .dstar{font-size:clamp(16px,1.35vw,22px);line-height:1.6;max-width:60ch}
+  .castlabel{margin-top:9vh;padding-top:5vh;border-top:1px solid rgba(255,255,255,.12)}
+  .castgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:1.4vw;margin-top:3vh}
+  .cast .ph{aspect-ratio:530/790;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 50% 30%,#3a3f45,#121416 75%);font-family:"Cormorant Garamond",serif;font-size:clamp(34px,3vw,52px);color:rgba(255,255,255,.35)}
+  .cast .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .cast .nm{font-family:Oswald,sans-serif;text-transform:uppercase;letter-spacing:.08em;font-size:clamp(12px,.95vw,15px);margin-top:10px}
+  @media (max-width:900px){.dtop{grid-template-columns:1fr}.dposter{max-width:320px}}
+  .modal .ytlink{display:block;text-align:center;margin-top:14px;color:#d63a3a;font-family:Oswald,sans-serif;letter-spacing:.2em;font-size:13px;text-decoration:none}
+  .modal .ytlink:hover{color:#fff}
+  #r-tv:checked ~ main #tv{display:block}
+  #r-reel:checked ~ main #reel{display:block}
+  #r-reel:checked ~ header label[for=r-reel]{opacity:1;border-bottom-color:#d63a3a}
+  #r-contact:checked ~ main #contact{display:block}
+  #r-bts:checked ~ main #bts{display:block}
+  #r-bts:checked ~ header label[for=r-bts]{opacity:1;border-bottom-color:#d63a3a}
+  .bts-head{text-align:center;margin:2vh 0 6vh}
+  .bts-head .kick{font-family:Oswald,sans-serif;letter-spacing:.5em;font-size:clamp(11px,.85vw,14px);color:#d63a3a;margin-bottom:1.6vh}
+  .bts-head h2{font-family:'Times New Roman',serif;font-weight:400;font-size:clamp(38px,4.6vw,76px);line-height:1}
+  .btsgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(12px,1.4vw,24px)}
+  .bt{position:relative;aspect-ratio:3/2;overflow:hidden;background:radial-gradient(circle at 30% 25%,#3a2a20,#0d0b0a 75%);cursor:default}
+  .bt img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+  .bt.has{cursor:zoom-in}
+  .bt.has:hover img{transform:scale(1.05)}
+  .bt::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.75),rgba(0,0,0,0) 50%)}
+  .bt .cap{position:absolute;left:clamp(14px,1.4vw,24px);bottom:clamp(12px,1.2vw,20px);z-index:2}
+  .bt .cap .f{font-family:Oswald,sans-serif;letter-spacing:.3em;font-size:11px;opacity:.75}
+  .bt .cap .t{font-size:15px;margin-top:.5vh}
+  .bt .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Oswald,sans-serif;letter-spacing:.35em;font-size:11px;opacity:.35}
+  .lb{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;cursor:zoom-out}
+  .lb.open{display:flex}
+  .lb img{max-width:92vw;max-height:84vh;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+  .lb .lcap{position:absolute;bottom:4vh;left:0;right:0;text-align:center;font-size:14px;opacity:.8}
+  @media (max-width:900px){.btsgrid{grid-template-columns:repeat(2,1fr)}}
+  #r-contact:checked ~ header label[for=r-contact]{opacity:1;border-bottom-color:#d63a3a}
+  .contact{max-width:1100px;margin:2vh auto 0;text-align:center}
+  .contact .kick{font-family:Oswald,sans-serif;letter-spacing:.5em;font-size:clamp(11px,.85vw,14px);color:#d63a3a;margin-bottom:1.6vh}
+  .contact h2{font-family:'Times New Roman',serif;font-weight:400;font-size:clamp(38px,4.6vw,76px);line-height:1;margin-bottom:7vh}
+  .reps{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2vw,32px);text-align:left}
+  .rep{border-top:1px solid rgba(255,255,255,.18);padding:3vh 0 0}
+  .rep .role{font-family:Oswald,sans-serif;letter-spacing:.35em;font-size:12px;color:#d63a3a;margin-bottom:1.6vh}
+  .rep .co{font-family:'Times New Roman',serif;font-size:clamp(22px,1.8vw,30px);margin-bottom:1.2vh}
+  .rep .who{font-size:15px;opacity:.85;margin-bottom:.6vh}
+  .rep a{display:block;color:#fff;opacity:.7;text-decoration:none;font-size:15px;line-height:1.8;transition:opacity .2s}
+  .rep a:hover{opacity:1;color:#d63a3a}
+  .contact .gen{margin-top:9vh;font-family:Oswald,sans-serif;letter-spacing:.3em;font-size:12px;opacity:.6}
+  .contact .gen a{display:inline-block;margin-top:1.4vh;font-family:'Times New Roman',serif;letter-spacing:.02em;font-size:clamp(20px,1.6vw,28px);color:#fff;opacity:1;text-decoration:none;border-bottom:1px solid #d63a3a}
+  @media (max-width:900px){.reps{grid-template-columns:1fr}}
+  .reps{grid-template-columns:repeat(2,1fr)!important;max-width:820px;margin:0 auto}
+  .rep .addr{font-size:15px;opacity:.7;line-height:1.6;margin-top:.6vh}
+  .cform{max-width:820px;margin:8vh auto 0;text-align:left;display:flex;flex-direction:column;gap:2.2vh}
+  .cform .ftitle{font-family:Oswald,sans-serif;letter-spacing:.35em;font-size:12px;color:#d63a3a}
+  .cform .frow{display:grid;grid-template-columns:1fr 1fr;gap:2vw}
+  .cform label{display:flex;flex-direction:column;gap:.8vh;font-size:13px;letter-spacing:.08em;opacity:.85}
+  .cform input,.cform textarea{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.18);color:#fff;font:inherit;font-size:16px;letter-spacing:0;padding:12px 14px;border-radius:2px;outline:none;transition:border-color .2s}
+  .cform input:focus,.cform textarea:focus{border-color:#d63a3a}
+  .cform textarea{resize:vertical}
+  .cform button{align-self:flex-start;background:#d63a3a;color:#fff;border:0;font-family:Oswald,sans-serif;letter-spacing:.3em;font-size:13px;padding:14px 38px;cursor:pointer;transition:background .2s}
+  .cform button:hover{background:#b82e2e}
+  .cform .hp{position:absolute;left:-9999px}
+  .cform .fnote{font-size:13px;opacity:.7;min-height:1em}
+  .policy{max-width:820px;margin:9vh auto 2vh;text-align:left;border-top:1px solid rgba(255,255,255,.12);padding-top:3vh}
+  .policy .ptitle{font-family:Oswald,sans-serif;letter-spacing:.3em;font-size:11px;opacity:.6;margin-bottom:1.4vh}
+  .policy p{font-size:13px;line-height:1.7;opacity:.5}
+  @media (max-width:900px){.reps{grid-template-columns:1fr!important}.cform .frow{grid-template-columns:1fr}}
+  .reel{position:relative;aspect-ratio:16/9;max-width:1400px;margin:0 auto;overflow:hidden;cursor:pointer;background:#08090b;box-shadow:0 40px 80px rgba(0,0,0,.7)}
+  .reel .mosaic{position:absolute;inset:-4%;display:grid;grid-template-columns:repeat(9,1fr);gap:4px;transform:rotate(-4deg) scale(1.08);filter:grayscale(.35) brightness(.38);transition:filter .6s ease,transform 8s ease}
+  .reel .mosaic div{aspect-ratio:2/3;background-size:cover;background-position:center}
+  .reel:hover .mosaic{filter:grayscale(0) brightness(.5);transform:rotate(-4deg) scale(1.14)}
+  .reel::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,0,0,.15) 0%,rgba(0,0,0,.75) 75%)}
+  .reel .center{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+  .reel .kick{font-family:Oswald,sans-serif;letter-spacing:.5em;font-size:clamp(11px,.9vw,15px);color:#d63a3a;margin-bottom:1.4vh}
+  .reel h2{font-family:'Times New Roman',serif;font-weight:400;font-size:clamp(40px,6vw,104px);line-height:1;letter-spacing:.02em}
+  .reel .bigplay{margin:4vh 0 3vh;width:clamp(70px,6vw,110px);height:clamp(70px,6vw,110px);border-radius:50%;border:2px solid rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;font-size:clamp(22px,2vw,36px);padding-left:6px;transition:background .3s,transform .3s}
+  .reel:hover .bigplay{background:#d63a3a;border-color:#d63a3a;transform:scale(1.06)}
+  .reel .sub{font-family:Oswald,sans-serif;letter-spacing:.35em;font-size:clamp(10px,.8vw,14px);opacity:.75}
+  .reel .soon{font-family:Oswald,sans-serif;letter-spacing:.3em;font-size:12px;margin-top:2vh;opacity:0;transition:opacity .3s}
+  .reel.nolink:active .soon,.reel.nolink.tapped .soon{opacity:.8}
+  #r-tv:checked ~ header label[for=r-tv]{opacity:1;border-bottom-color:#d63a3a}
+  .nets{margin:0 0 6vh;text-align:center}
+  .nets-k{font-family:Oswald,sans-serif;letter-spacing:.5em;font-size:clamp(11px,.85vw,14px);color:#d63a3a;margin-bottom:3vh}
+  .nets-row{display:flex;justify-content:center;align-items:center;gap:clamp(28px,5vw,90px);flex-wrap:wrap}
+  .net{font-family:Oswald,sans-serif;font-weight:700;font-size:clamp(22px,2.4vw,40px);letter-spacing:.08em;color:#fff;opacity:.55;transition:opacity .3s;text-transform:uppercase}
+  .net:hover{opacity:1}
+  .net img{display:block;height:clamp(28px,3.2vw,54px);width:auto}
+  #tv .row{grid-template-columns:repeat(5,calc((100% - 5 * 1.4vw) / 6));justify-content:center}
+  @media (max-width:900px){#tv .row{grid-template-columns:repeat(3,1fr)}}
+  #films .row{grid-template-columns:repeat(12,1fr)}
+  #films .row>.poster{grid-column:span 2}
+  #films .row>.poster:nth-child(6n+1):nth-last-child(5){grid-column:2/span 2}
+  #films .row>.poster:nth-child(6n+1):nth-last-child(4){grid-column:3/span 2}
+  #films .row>.poster:nth-child(6n+1):nth-last-child(3){grid-column:4/span 2}
+  #films .row>.poster:nth-child(6n+1):nth-last-child(2){grid-column:5/span 2}
+  #films .row>.poster:nth-child(6n+1):nth-last-child(1){grid-column:6/span 2}
+  @media (max-width:900px){#films .row{grid-template-columns:repeat(3,1fr)}#films .row>.poster{grid-column:auto!important}}
+  .dextra:empty{display:none}
+  .dtitle .dnet{font-size:.45em;opacity:.6;letter-spacing:.02em;white-space:nowrap;vertical-align:middle}
+  .dextra{margin-top:6vh;display:flex;gap:1.6vw;flex-wrap:wrap}
+  .dextra img{display:block;width:100%;max-width:1100px;height:auto;box-shadow:0 30px 60px rgba(0,0,0,.6)}
+  .cast .nm{font-size:clamp(11px,.82vw,14px);letter-spacing:.05em;overflow-wrap:anywhere;line-height:1.3}
+  .castgrid{display:flex!important;flex-direction:column;gap:1.4vw}
+  .crow{display:flex;gap:1.4vw}
+  .note{text-align:center;padding:0 0 18px;margin-top:-6vh;position:relative;z-index:5;font-size:11px;letter-spacing:.08em;color:rgba(255,255,255,.45)}
+  @media (max-width:900px){.row{grid-template-columns:repeat(3,1fr);gap:16px}nav{gap:1.2rem}}
+</style>
+</head>
+<body>
+<section class="hero">
+  <input type="radio" name="pg" id="r-films" class="pg" checked>
+  <input type="radio" name="pg" id="r-tv" class="pg">
+  <input type="radio" name="pg" id="r-mv" class="pg">
+  <input type="radio" name="pg" id="r-cm" class="pg">
+  <input type="radio" name="pg" id="r-reel" class="pg">
+  <input type="radio" name="pg" id="r-bts" class="pg">
+  <input type="radio" name="pg" id="r-contact" class="pg">
+  <header>
+    <div class="logo">
+      <div class="name">Simon West</div>
+      <div class="sub">FILMS</div>
+    </div>
+    <nav>
+      <label for="r-films">FILMS</label>
+      <label for="r-mv">MUSIC VIDEOS</label>
+      <label for="r-cm">COMMERCIALS</label>
+      <label for="r-tv">TV</label>
+      <label for="r-reel">REEL</label>
+      <label for="r-bts">BTS</label>
+      <label for="r-contact">CONTACT</label>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page" id="films">
+    <div class="row">
+      <div data-film="Fortitude" class="poster soon" title="Fortitude · Coming Soon"><div class="art" style="background:linear-gradient(0deg,rgba(0,0,0,.9) 0%,rgba(0,0,0,.2) 40%,rgba(0,0,0,0) 60%,rgba(0,0,0,.55) 100%),url(img/8324379b3861.jpg) center/cover no-repeat"></div><div class="top">A SIMON WEST FILM</div><div><div class="title">Fortitude</div><div class="year" style="color:#d63a3a;font-weight:700">COMING SOON</div></div></div>
+      <div data-film="The Expendables 2" class="poster" title="The Expendables 2 (2012)"><img loading="lazy" class="real" src="img/15b25c5b3717.jpg" alt="The Expendables 2"></div>
+      <div data-film="Lara Croft: Tomb Raider" class="poster" title="Lara Croft: Tomb Raider (2001)"><img loading="lazy" class="real" src="img/fbfbfce33027.jpg" alt="Lara Croft: Tomb Raider"></div>
+      <div data-film="Con Air" class="poster" title="Con Air (1997)"><img loading="lazy" class="real" src="img/2dfb59f4b4af.jpg" alt="Con Air"></div>
+      <div data-film="Black Hawk Down" class="poster" title="Black Hawk Down (2001) · Executive Producer"><img loading="lazy" class="real" src="img/b910661291fe.jpg" alt="Black Hawk Down"></div>
+      <div data-film="The General's Daughter" class="poster" title="The General's Daughter (1999)"><img loading="lazy" class="real" src="img/c731db978752.jpg" alt="The General's Daughter"></div>
+      <div data-film="The Mechanic" class="poster" title="The Mechanic (2011)"><img loading="lazy" class="real" src="img/dc2a775549e1.jpg" alt="The Mechanic"></div>
+      <div data-film="When a Stranger Calls" class="poster" title="When a Stranger Calls (2006)"><img loading="lazy" class="real" src="img/31e8b342abf8.jpg" alt="When a Stranger Calls"></div>
+      <div data-film="Stolen" class="poster" title="Stolen (2012)"><img loading="lazy" class="real" src="img/5c2e113befba.jpg" alt="Stolen"></div>
+      <div data-film="Wild Card" class="poster" title="Wild Card (2015)"><img loading="lazy" class="real" src="img/7c200e0f0cbb.jpg" alt="Wild Card"></div>
+      <div data-film="Bride Hard" class="poster" title="Bride Hard (2025)"><img loading="lazy" class="real" src="img/5bcfdb9308cc.jpg" alt="Bride Hard"></div>
+      <div data-film="Old Guy" class="poster" title="Old Guy (2024)"><img loading="lazy" class="real" src="img/7693ea0e39ba.jpg" alt="Old Guy"></div>
+      <div data-film="Stratton" class="poster" title="Stratton (2017)"><img loading="lazy" class="real" src="img/c6b8b67b3675.jpg" alt="Stratton"></div>
+      <div data-film="Gun Shy" class="poster" title="Gun Shy (2017)"><img loading="lazy" class="real" src="img/b0d3d6d0be62.jpg" alt="Gun Shy"></div>
+      <div data-film="Skyfire" class="poster" title="Skyfire (2019)"><img loading="lazy" class="real" src="img/1a8d887daf5c.jpg" alt="Skyfire"></div>
+    </div>
+    <div class="totals">
+      <div class="tlabel">WORLDWIDE BOX OFFICE</div>
+      <div class="tnums">
+        <div class="tstat"><div class="tnum">$1.33<span>B</span></div><div class="tsub">at release</div></div>
+        <div class="tdiv"></div>
+        <div class="tstat"><div class="tnum">$1.95<span>B</span></div><div class="tsub">in 2026 dollars</div></div>
+      </div>
+    </div>
+    </section>
+    <section class="page" id="tv">
+    <div class="nets">
+      <div class="nets-k">MADE FOR</div>
+      <div class="nets-row">
+        <div class="net" data-net="cbs"><img loading="lazy" src="img/0789328f6cb1.png" alt="CBS"></div>
+        <div class="net" data-net="fox"><img loading="lazy" src="img/165ffc73c10d.png" alt="FOX" style="height:clamp(24px,2.6vw,44px)"></div>
+        <div class="net" data-net="nbc"><img loading="lazy" src="img/54aeb222043b.png" alt="NBC"></div>
+        <div class="net" data-net="prime"><img loading="lazy" src="img/b47193b10a93.png" alt="Prime Video" style="height:clamp(44px,4.6vw,78px)"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div data-film="Boundless" class="poster" title="Boundless (2022) · Director · Executive Producer"><img loading="lazy" class="real" src="img/16954e4d358c.jpg" alt="Boundless"></div>
+      <div data-film="The Cape" class="poster" title="The Cape (2011) · Director (Pilot) · Executive Producer"><img loading="lazy" class="real" src="img/96cbfec30ba6.jpg" alt="The Cape"></div>
+      <div data-film="Human Target" class="poster" title="Human Target (2010) · Director (Pilot) · Executive Producer"><img loading="lazy" class="real" src="img/5f6aa640f727.jpg" alt="Human Target"></div>
+      <div data-film="Close to Home" class="poster" title="Close to Home (2005) · Director (Pilot) · Executive Producer"><img loading="lazy" class="real" src="img/7f17c870926b.jpg" alt="Close to Home"></div>
+      <div data-film="Keen Eddie" class="poster" title="Keen Eddie (2003) · Director (Pilot) · Executive Producer"><img loading="lazy" class="real" src="img/17a41462bb67.jpg" alt="Keen Eddie"></div>
+    </div>
+    </section>
+    <section class="page" id="bts">
+      <div class="bts-head"><div class="kick">SIMON WEST</div><h2>Behind the Scenes</h2></div>
+      <div class="btsgrid"></div>
+    </section>
+    <section class="page" id="contact">
+      <div class="contact">
+        <div class="kick">SIMON WEST FILMS</div>
+        <h2>Contact Us</h2>
+        <div class="reps">
+          <div class="rep">
+            <div class="role">INDUSTRY INQUIRIES</div>
+            <div class="co">Robert Leader</div>
+            <div class="who">President, Simon West Productions</div>
+            <a href="mailto:RLeader.swp@gmail.com">RLeader.swp@gmail.com</a>
+          </div>
+          <div class="rep">
+            <div class="role">TALENT AGENCY</div>
+            <div class="co">Independent Artist Group</div>
+            <div class="who">Representative: Adam Kanter</div>
+            <a href="tel:+13108884200">+1 (310) 888-4200</a>
+            <a href="https://independentartistgroup.com" target="_blank" rel="noopener">independentartistgroup.com</a>
+            <div class="addr">10585 Santa Monica Blvd.<br>Los Angeles, CA 90025</div>
+          </div>
+        </div>
+        <form class="cform" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+          <input type="hidden" name="form-name" value="contact">
+          <p class="hp"><label>Leave blank <input name="bot-field"></label></p>
+          <div class="ftitle">SEND A MESSAGE</div>
+          <div class="frow">
+            <label><span>First Name *</span><input name="first-name" required></label>
+            <label><span>Last Name *</span><input name="last-name" required></label>
+          </div>
+          <label><span>Email *</span><input type="email" name="email" required></label>
+          <label><span>Message *</span><textarea name="message" rows="6" required></textarea></label>
+          <button type="submit">SEND</button>
+          <div class="fnote"></div>
+        </form>
+        <div class="policy">
+          <div class="ptitle">UNSOLICITED SUBMISSIONS POLICY</div>
+          <p>Simon West Films has a policy that neither it nor any of its agents or other employees shall accept or consider any unsolicited material, ideas or suggestions of any nature whatsoever (&ldquo;Unsolicited Materials&rdquo;). Please be advised that the Unsolicited Materials will not be considered by anyone at Simon West Films, and if possible they will be returned to you with no copies kept. Unsolicited Materials will not be forwarded to or discussed with any third parties.</p>
+        </div>
+      </div>
+    </section>
+    <section class="page" id="reel">
+      <div class="reel" data-yt="km4ZTweDNJk">
+        <div class="mosaic"></div>
+        <div class="center">
+          <div class="kick">SIMON WEST</div>
+          <h2>Director's Reel</h2>
+          <div class="bigplay">&#9654;</div>
+          <div class="sub">FILMS &nbsp;·&nbsp; COMMERCIALS &nbsp;·&nbsp; MUSIC VIDEOS &nbsp;·&nbsp; TV</div>
+        </div>
+      </div>
+    </section>
+    <section class="page" id="music-videos">
+    <div class="grid">
+      <div class="clip" data-yt="dQw4w9WgXcQ" style="--c1:#1f3b73;--c2:#0a1226;background-image:linear-gradient(0deg,rgba(0,0,0,.75),rgba(0,0,0,.1) 60%),url(img/9a3d8bb1badb.jpg);background-size:cover;background-position:center"><div class="play corner">&#9654;</div><div class="meta"><div class="who">Rick Astley</div><div class="what">Never Gonna Give You Up</div><div class="yr">1987</div></div></div>
+      <div class="clip" data-yt="ykDsmAqExH8" style="--c1:#a3243b;--c2:#2a0810;background-image:linear-gradient(0deg,rgba(0,0,0,.75),rgba(0,0,0,.1) 60%),url(img/f84879fe866a.jpg);background-size:cover;background-position:center"><div class="play corner">&#9654;</div><div class="meta"><div class="who">Mel &amp; Kim</div><div class="what">Respectable</div><div class="yr">1987 · Best Video, Montreux</div></div></div>
+      <div class="clip" data-yt="6UKLdG_xcIU" style="--c1:#3f6b5a;--c2:#0d1a15;background-image:linear-gradient(0deg,rgba(0,0,0,.75),rgba(0,0,0,.1) 60%),url(img/97cdfe43b2b9.jpg);background-size:cover;background-position:center"><div class="play corner">&#9654;</div><div class="meta"><div class="who">Mike &amp; The Mechanics</div><div class="what">Everybody Gets a Second Chance</div><div class="yr">1992</div></div></div>
+    </div>
+    <div class="totals">
+      <div class="bigline">1.84 Billion Views</div>
+      <div class="tsub">on YouTube · official music videos</div>
+    </div>
+    </section>
+    <section class="page" id="commercials">
+    <div class="grid">
+      <div class="clip logo" style="--c1:#d1a21c;--c2:#3a2b04;background-image:url(img/84d0cc223737.png),radial-gradient(circle at 30% 20%,var(--c1),var(--c2) 75%);background-size:auto 44%,cover;background-repeat:no-repeat;background-position:center 34%,center"><div class="meta"><div class="who">McDonald's</div><div class="what">Commercial</div></div></div>
+      <div class="clip" data-yt="JpxGZVQReiI" style="--c1:#1d4fa0;--c2:#08142b;background-image:linear-gradient(0deg,rgba(0,0,0,.8),rgba(0,0,0,0) 55%),url(img/faace2e1ff7b.jpg);background-size:cover;background-position:center"><div class="play corner">&#9654;</div><div class="meta"><div class="who">Pepsi</div><div class="what">Innertube</div><div class="yr">Boy in the Bottle · Super Bowl 1995</div></div></div>
+      <div class="clip logo" style="--c1:#1d4fa0;--c2:#061026;background-color:#04081a;background-image:linear-gradient(0deg,rgba(0,0,0,.85),rgba(0,0,0,0) 40%),radial-gradient(ellipse 34% 52% at 50% 42%,rgba(4,8,26,0) 70%,#04081a 100%),url(img/a058a62416b6.jpg);background-size:cover,cover,auto 80%;background-repeat:no-repeat;background-position:center,center,center 12%"><div class="meta"><div class="who">Pepsi</div><div class="what">Featuring David Beckham</div></div></div>
+      <div class="clip" data-yt="ONb2c56x6sE" style="--c1:#b3202a;--c2:#2b0609;background-image:linear-gradient(0deg,rgba(0,0,0,.8),rgba(0,0,0,0) 55%),url(img/e931f4d6d56e.jpg);background-size:cover;background-position:center"><div class="play corner">&#9654;</div><div class="meta"><div class="who">Budweiser</div><div class="what">Ants</div></div></div>
+      <div class="clip" data-yt="VPKXAToDr-M" style="--c1:#2f7a3a;--c2:#0a1f0d;background-image:linear-gradient(0deg,rgba(0,0,0,.8),rgba(0,0,0,0) 55%),url(img/206a811493a8.jpg);background-size:cover;background-position:center"><div class="play corner">&#9654;</div><div class="meta"><div class="who">Budweiser</div><div class="what">Frogs</div></div></div>
+      <div class="clip logo" style="--c1:#2f7fc1;--c2:#0a1f33;background-image:url(img/12a3f6ef19c5.png),radial-gradient(circle at 30% 20%,var(--c1),var(--c2) 75%);background-size:58% auto,cover;background-repeat:no-repeat;background-position:center 34%,center"><div class="meta"><div class="who">AT&amp;T</div><div class="what">Commercial</div></div></div>
+      <div class="clip" style="--c1:#8d939a;--c2:#111316;background-image:radial-gradient(circle at 30% 20%,var(--c1),var(--c2) 75%)"><div class="meta"><div class="who">Mercedes-Benz</div><div class="what">Commercial</div></div></div>
+      <div class="clip logo" style="--c1:#2a5c8f;--c2:#0a1a2b;background-image:url(img/60bdf6503fe7.png),radial-gradient(circle at 30% 20%,var(--c1),var(--c2) 75%);background-size:56% auto,cover;background-repeat:no-repeat;background-position:center 36%,center"><div class="meta"><div class="who">Ford</div><div class="what">Commercial</div></div></div>
+      <div class="clip" data-yt="a-OMZzf4NG4" style="--c1:#ff7a00;--c2:#3a1600;background-image:radial-gradient(circle at 30% 20%,var(--c1),var(--c2) 75%)"><div class="play corner">&#9654;</div><div class="meta"><div class="who">Orange</div><div class="what">Commercial</div></div></div>
+      <div class="clip logo" style="--c1:#3a9a52;--c2:#0b2412;background-image:linear-gradient(90deg,rgba(0,0,0,.35),rgba(0,0,0,0) 55%),url(img/30563da270c7.jpg);background-size:cover,cover;background-repeat:no-repeat;background-position:center,center"><div class="meta"><div class="who">Sprite</div><div class="what">Commercial</div></div></div>
+      <div class="clip logo" style="--c1:#3a3a3a;--c2:#070707;background-image:url(img/4bac45db69c9.png),radial-gradient(circle at 30% 20%,var(--c1),var(--c2) 75%);background-size:56% auto,cover;background-repeat:no-repeat;background-position:center 32%,center"><div class="meta"><div class="who">Sprint</div><div class="what">Commercial</div></div></div>
+      <div class="clip logo" style="--c1:#2b2a6b;--c2:#0b0a22;background-image:url(img/2f8b653fbab6.png),radial-gradient(circle at 30% 20%,var(--c1),var(--c2) 75%);background-size:auto 50%,cover;background-repeat:no-repeat;background-position:center 30%,center"><div class="meta"><div class="who">MCI</div><div class="what">Commercial</div></div></div>
+      <div class="clip logo" style="--c1:#a8782a;--c2:#2a1c07;background-image:url(img/62ede7c91a14.png),radial-gradient(circle at 30% 20%,var(--c1),var(--c2) 75%);background-size:auto 52%,cover;background-repeat:no-repeat;background-position:center 32%,center"><div class="meta"><div class="who">Miller Beer</div><div class="what">Commercial</div></div></div>
+      <div class="clip" data-yt="X7e1gepPbCk" style="--c1:#1f5fb0;--c2:#06162e;background-image:radial-gradient(circle at 30% 20%,var(--c1),var(--c2) 75%)"><div class="play corner">&#9654;</div><div class="meta"><div class="who">U.S. Cellular</div><div class="what">Commercial</div></div></div>
+      <div class="clip logo" style="--c1:#e07a1f;--c2:#3a1a04;background-color:#fd6707;background-image:linear-gradient(90deg,rgba(0,0,0,.35),rgba(0,0,0,0) 55%),url(img/3b3df9639134.jpg);background-size:cover,auto 100%;background-repeat:no-repeat;background-position:center,right 4% center"><div class="meta"><div class="who">Little Caesar's</div><div class="what">Airplane</div><div class="yr">Clio Award</div></div></div>
+      <div class="clip logo" style="--c1:#c9581c;--c2:#341203;background-color:#fd6707;background-image:linear-gradient(90deg,rgba(0,0,0,.35),rgba(0,0,0,0) 55%),url(img/3b3df9639134.jpg);background-size:cover,auto 100%;background-repeat:no-repeat;background-position:center,right 4% center"><div class="meta"><div class="who">Little Caesar's</div><div class="what">Italian Feast</div><div class="yr">Cannes Golden Lion</div></div></div>
+      <div class="clip" style="--c1:#c41230;--c2:#2a0409;background-image:linear-gradient(0deg,rgba(0,0,0,.8),rgba(0,0,0,0) 55%),url(img/57f8563601ec.jpg);background-size:cover;background-position:center"><div class="play corner">&#9654;</div><div class="meta"><div class="who">Levi&#39;s</div><div class="what">Zippers Freeze</div></div></div>
+    </div>
+    </section>
+    <section class="detail" id="detail" hidden>
+      <button class="back" type="button">&larr; ALL FILMS</button>
+      <div class="dtop">
+        <div class="dposter"></div>
+        <div class="dinfo">
+          <div class="dkicker"></div>
+          <h2 class="dtitle"></h2>
+          <div class="dmeta"></div>
+          <div class="castgrid"></div>
+        </div>
+      </div>
+      <div class="dextra"></div>
+    </section>
+  </main>
+</section>
+<div class="modal" id="modal"><button class="x" aria-label="Close">&times;</button><div class="frame"></div></div>
+<script>
+(function(){var m=document.getElementById('modal'),f=m.querySelector('.frame');
+ function close(){m.classList.remove('open');f.innerHTML='';}
+ document.querySelectorAll('.clip[data-yt]').forEach(function(c){c.addEventListener('click',function(){
+   var id=c.dataset.yt, watch='https://www.youtube.com/watch?v='+id;
+   if(location.protocol==='file:'){window.open(watch,'_blank','noopener');return;}
+   f.innerHTML='<iframe src="https://www.youtube.com/embed/'+id+'?autoplay=1&rel=0&playsinline=1" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe><a class="ytlink" href="'+watch+'" target="_blank" rel="noopener">Not playing? Watch on YouTube &#8599;</a>';
+   m.classList.add('open');});});
+ m.addEventListener('click',function(e){if(e.target===m||e.target.classList.contains('x'))close();});
+ document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+})();
+</script>
+<script>
+(function(){
+ var EXTRA={};
+ var CAST_IMG={"barbara-goenaga":"img/a6c67d1ccd94.jpg","pepon-nieto":"img/93f63c95f44c.jpg","adrian-lastra":"img/dc9ecf691ce1.jpg","niccolo-senni":"img/75792c0a7146.jpg","jon-seda":"img/e07d4fa23ae8.jpg","cress-williams":"img/813fb796623f.jpg","david-james-elliott":"img/1aeb2e9f4c85.jpg","christian-kane":"img/f815e5b3bd2d.jpg","john-carroll-lynch":"img/35eb8da00732.jpg","kimberly-elise":"img/be1df6646bff.jpg","janet-montgomery":"img/d5ff0c40be24.jpg","indira-varma":"img/03e1abeb1538.jpg","tricia-helfer":"img/ef3f790c750a.jpg","chi-mcbride":"img/68505579c987.jpg","jackie-earle-haley":"img/db570f3f072a.jpg","martin-klebba":"img/1263053c95d9.jpg","ryan-wynott":"img/ac12d41476be.jpg","dorian-missick":"img/eb7fb65fe705.jpg","jennifer-ferrin":"img/0721ed150e03.jpg","vinnie-jones":"img/19ad96781eda.jpg","james-frain":"img/588d6e0818c5.jpg","keith-david":"img/44e6a4cfe74b.jpg","david-lyons":"img/bc72c0c1785f.jpg","summer-glau":"img/09f417cceef9.jpg","carlos-cuevas":"img/b8ebb29f6703.jpg","sergio-peris-mencheta":"img/4641eeca1c8a.jpg","alvaro-morte":"img/6bbfd11ad38e.jpg","rodrigo-santoro":"img/e969fb17de80.jpg","rachael-buckley":"img/aad1e9530e70.jpg","alexei-sayle":"img/b8c45b784574.jpg","colin-salmon":"img/08cceace0b2b.jpg","sienna-miller":"img/dac1568c4f85.jpg","jennifer-finnigan":"img/707a3e7337bf.jpg","mark-valley":"img/b2c787921589.jpg","anne-heche":"img/1290d4a744de.jpg","dominik-garcia-lorido":"img/b4cbc1ed7871.jpg","michael-angarano":"img/8e2f9eaf449e.jpg","shawn-dou":"img/3bae465f93f0.jpg","hannah-quinlivan":"img/68c8584e8e99.jpg","wang-xueqi":"img/bb2bfb904cc8.jpg","gigi-zumbado":"img/7a498f25a2fe.jpg","anna-chlumsky":"img/335d2a6bf660.jpg","stephen-dorff":"img/71b154467ec4.jpg","justin-hartley":"img/a901ce2e2a4d.jpg","da-vine-joy-randolph":"img/04ea97f85668.jpg","austin-stowell":"img/b4eba163954d.jpg","thomas-kretschmann":"img/f8433aaa827e.jpg","tyler-hoechlin":"img/2c3939d14c26.jpg","connie-nielsen":"img/d79b1b40fe27.jpg","derek-jacobi":"img/36dec5c2434d.jpg","gemma-chan":"img/5041db919d97.jpg","dominic-cooper":"img/617b37bcea50.jpg","tom-felton":"img/6208010b0b13.jpg","jason-isaacs":"img/c7f8f64fb3d4.jpg","oliver-west":"img/caf1740cbe29.jpg","william-west":"img/ce5ed6b9833e.jpg","olga-kurylenko":"img/50111290d570.jpg","antonio-banderas":"img/405dd07ebfb0.jpg","hope-davis":"img/8a6d18647ed3.jpg","jason-alexander":"img/71958fad2e03.jpg","milo-ventimiglia":"img/0ce4093f9e70.jpg","stanley-tucci":"img/83f1d84ae572.jpg","sofia-vergara":"img/894b3ff679bf.jpg","sami-gayle":"img/5783b5a1f23c.jpg","danny-huston":"img/c1c909d20469.jpg","josh-lucas":"img/f88d62e69ab4.jpg","malin-akerman":"img/d450853b9664.jpg","katie-cassidy":"img/9f2578767ad9.jpg","clark-gregg":"img/099ef3bb781f.jpg","tessa-thompson":"img/f50041244f15.jpg","brian-geraghty":"img/47699eba5b0c.jpg","camilla-belle":"img/886cb6e3aa24.jpg","lucy-liu":"img/e4e761a31679.jpg","cooper-hoffman":"img/92b602314d73.jpg","christoph-waltz":"img/aa9ed8e62ef3.jpg","chad-stahelski":"img/7e0527928377.jpg","tony-goldwyn":"img/46ad01b1919d.jpg","david-leitch":"img/345b0250b389.jpg","ben-foster":"img/a94d7b66b52a.jpg","donald-sutherland":"img/c362cba93031.jpg","james-cromwell":"img/92ffb0277e37.jpg","timothy-hutton":"img/97a19ee602da.jpg","madeleine-stowe":"img/55967a4ba8ab.jpg","james-woods":"img/c67c1430aee8.jpg","william-fichtner":"img/67bb5b0fe72a.jpg","sam-shepard":"img/d4f0b462f557.jpg","anna-camp":"img/e486ea61e2fb.jpg","rebel-wilson":"img/71d1441918f2.jpg","tom-sizemore":"img/f2296c5a264d.jpg","ewan-mcgregor":"img/9eec57716cd6.jpg","eric-bana":"img/694c31c5bb53.jpg","josh-hartnett":"img/729834878f47.jpg","tom-hardy":"img/aa21ff146d14.jpg","julian-rhind-tutt":"img/32a0059bac77.jpg","noah-taylor":"img/1ab8371430c8.jpg","arnold-schwarzenegger":"img/abdf619a3890.jpg","bruce-willis":"img/5e798f506943.jpg","randy-couture":"img/89acb2e3c8c9.jpg","liam-hemsworth":"img/60faa1ac4536.jpg","jean-claude-van-damme":"img/0e3272d6fb30.jpg","dolph-lundgren":"img/53be8af43a2b.jpg","jet-li":"img/1ecc635970ba.jpg","chuck-norris":"img/ca87b992aecd.jpg","art-malik":"img/e360058158a5.jpg","jordi-molla":"img/ae05b916cfc3.jpg","adrian-topol":"img/504d2b8c01be.jpg","maeve-courtier-lilley":"img/526d441fa94d.jpg","emilio-sakraya":"img/7660c516170e.jpg","john-travolta":"img/3d386f1b1ec3.jpg","lukas-haas":"img/8f28b1f7cb41.jpg","paul-anderson":"img/acf5289500fa.jpg","alice-eve":"img/3f5df2b20021.jpg","ed-skrein":"img/a10bcfcfe05c.jpg","matthew-goode":"img/fbc5ac4998f3.jpg","michael-sheen":"img/0c17aa8983fa.jpg","ben-kingsley":"img/49ee62a17984.jpg","iain-glen":"img/f43dba453598.jpg","daniel-craig":"img/625190563c45.jpg","jon-voight":"img/d69d629ed322.jpg","angelina-jolie":"img/7737700d8252.jpg","mykelti-williamson":"img/73381a89aaf6.jpg","rachel-ticotin":"img/bae2b5343073.jpg","colm-meaney":"img/988d87484510.jpg","ving-rhames":"img/fee39e805cae.jpg","dave-chappelle":"img/2b23d2fd52e0.jpg","steve-buscemi":"img/f56a0815da83.jpg","john-cusack":"img/69696881d67a.jpg","john-malkovich":"img/c7ad4d02b8e3.jpg","sylvester-stallone":"img/3d2c03e8057d.jpg","jason-statham":"img/dbf220d3f8ac.jpg","nicolas-cage":"img/2dd53743ca9e.jpg","terry-crews":"img/ff83b1d76211.jpg"};
+ var FILMS={"Fortitude": {"year": "Coming Soon", "role": "Director", "bo": null, "cast": ["Nicolas Cage", "Ben Kingsley", "Michael Sheen", "Matthew Goode", "Alice Eve", "Ed Skrein", "Paul Anderson", "Lukas Haas", "Jordi Moll\u00e0", "Art Malik", "Emilio Sakraya", "Adrian Topol", "Maeve Courtier-Lilley", "Oliver West", "William West"]}, "The Expendables 2": {"year": "2012", "role": "Director", "bo": "$314,975,955", "cast": ["Arnold Schwarzenegger", "Sylvester Stallone", "Bruce Willis", "Jason Statham", "Jean-Claude Van Damme", "Chuck Norris", "Jet Li", "Liam Hemsworth", "Terry Crews", "Dolph Lundgren", "Randy Couture"], "net": "Lionsgate"}, "Lara Croft: Tomb Raider": {"year": "2001", "role": "Director", "bo": "$274,703,340", "cast": ["Angelina Jolie", "Daniel Craig", "Jon Voight", "Iain Glen", "Noah Taylor", "Julian Rhind-Tutt"], "net": "Paramount"}, "Con Air": {"year": "1997", "role": "Director", "bo": "$224,012,234", "cast": ["Nicolas Cage", "John Cusack", "John Malkovich", "Dave Chappelle", "Steve Buscemi", "Ving Rhames", "Colm Meaney", "Mykelti Williamson", "Rachel Ticotin"], "net": "Disney"}, "Black Hawk Down": {"year": "2001", "role": "Executive Producer", "bo": "$172,989,651", "cast": ["Tom Hardy", "Ewan McGregor", "Josh Hartnett", "Eric Bana", "Tom Sizemore", "William Fichtner", "Sam Shepard"], "net": "Sony"}, "The General's Daughter": {"year": "1999", "role": "Director", "bo": "$149,705,852", "cast": ["John Travolta", "James Woods", "Madeleine Stowe", "Timothy Hutton", "James Cromwell"], "net": "Paramount"}, "The Mechanic": {"year": "2011", "role": "Director", "bo": "$76,130,093", "cast": ["Jason Statham", "Donald Sutherland", "Ben Foster", "Tony Goldwyn", "David Leitch", "Chad Stahelski"], "net": "CBS"}, "When a Stranger Calls": {"year": "2006", "role": "Director", "bo": "$67,062,123", "cast": ["Camilla Belle", "Tessa Thompson", "Clark Gregg", "Katie Cassidy", "Brian Geraghty"], "net": "Sony"}, "Skyfire": {"year": "2019", "role": "Director", "bo": "$24,825,246", "cast": ["Jason Isaacs", "Wang Xueqi", "Hannah Quinlivan", "Shawn Dou"]}, "Stolen": {"year": "2012", "role": "Director", "bo": "$17,967,746", "cast": ["Nicolas Cage", "Malin Akerman", "Josh Lucas", "Danny Huston", "Sami Gayle"]}, "Wild Card": {"year": "2015", "role": "Director", "bo": "$4,315,789", "cast": ["Jason Statham", "Sof\u00eda Vergara", "Stanley Tucci", "Anne Heche", "Jason Alexander", "Milo Ventimiglia", "Hope Davis", "Michael Angarano", "Dominik Garc\u00eda-Lorido"]}, "Bride Hard": {"year": "2025", "role": "Director", "bo": "$308,561", "cast": ["Rebel Wilson", "Da'Vine Joy Randolph", "Justin Hartley", "Stephen Dorff", "Anna Camp", "Anna Chlumsky", "Gigi Zumbado"]}, "Old Guy": {"year": "2024", "role": "Director", "bo": "$138,538", "cast": ["Christoph Waltz", "Lucy Liu", "Cooper Hoffman"]}, "Stratton": {"year": "2017", "role": "Director", "bo": "$95,743", "cast": ["Dominic Cooper", "Gemma Chan", "Tom Felton", "Derek Jacobi", "Connie Nielsen", "Tyler Hoechlin", "Thomas Kretschmann", "Austin Stowell"]}, "Gun Shy": {"year": "2017", "role": "Director", "bo": "$2,480", "cast": ["Antonio Banderas", "Olga Kurylenko"]}, "Boundless": {"year": "2022", "role": "TV", "kicker": "A SIMON WEST SERIES", "meta": "2022  \u00b7  Directed & executive produced by Simon West", "cast": ["Rodrigo Santoro", "\u00c1lvaro Morte", "Sergio Peris-Mencheta", "Carlos Cuevas", "Niccol\u00f2 Senni", "Adri\u00e1n Lastra", "Pep\u00f3n Nieto", "B\u00e1rbara Goenaga"], "net": "Prime Video"}, "The Cape": {"year": "2011", "role": "TV", "kicker": "A SIMON WEST SERIES", "meta": "2011  \u00b7  Pilot directed & executive produced by Simon West", "cast": ["Summer Glau", "David Lyons", "Keith David", "James Frain", "Vinnie Jones", "Jennifer Ferrin", "Dorian Missick", "Ryan Wynott", "Martin Klebba"], "net": "NBC"}, "Human Target": {"year": "2010", "role": "TV", "kicker": "A SIMON WEST SERIES", "meta": "2010  \u00b7  Pilot directed & executive produced by Simon West", "cast": ["Mark Valley", "Jackie Earle Haley", "Chi McBride", "Tricia Helfer", "Indira Varma", "Janet Montgomery"], "net": "FOX"}, "Close to Home": {"year": "2005", "role": "TV", "kicker": "A SIMON WEST SERIES", "meta": "2005  \u00b7  Pilot directed & executive produced by Simon West", "cast": ["Jennifer Finnigan", "Kimberly Elise", "John Carroll Lynch", "Christian Kane", "David James Elliott", "Cress Williams", "Jon Seda"], "net": "CBS"}, "Keen Eddie": {"year": "2003", "role": "TV", "kicker": "A SIMON WEST SERIES", "meta": "2003  \u00b7  Pilot directed & executive produced by Simon West", "cast": ["Sienna Miller", "Mark Valley", "Colin Salmon", "Julian Rhind-Tutt", "Alexei Sayle", "Rachael Buckley"], "net": "FOX"}};
+ var main=document.querySelector('main'),det=document.getElementById('detail');
+ function slug(n){return n.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
+ function initials(n){return n.split(/\s+/).map(function(w){return w[0]}).slice(0,2).join('').toUpperCase();}
+ function esc(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML;}
+ function open(tile){
+   var name=tile.dataset.film,f=FILMS[name];if(!f)return;
+   var pc=tile.cloneNode(true);pc.removeAttribute('data-film');
+   det.querySelector('.dposter').innerHTML='';det.querySelector('.dposter').appendChild(pc);
+   det.querySelector('.dkicker').textContent=f.kicker?f.kicker:f.role==='Director'?'A SIMON WEST FILM':'SIMON WEST · EXECUTIVE PRODUCER';
+   det.querySelector('.dtitle').innerHTML=esc(name)+(f.net?' <span class="dnet">('+esc(f.net)+')</span>':'');
+   var meta=[f.year,f.role==='Director'?'Directed by Simon West':'Executive Produced by Simon West'];
+   det.querySelector('.dmeta').textContent=f.meta||meta.join('  ·  ');
+   det.querySelector('.castgrid').innerHTML=f.cast.map(function(c){
+     return '<div class="cast"><div class="ph">'+initials(c)+'<img loading="lazy" src="'+(CAST_IMG[slug(c)]||('cast/'+slug(c)+'.jpg'))+'" alt="'+esc(c)+'" onerror="this.remove()"></div><div class="nm">'+esc(c)+'</div></div>';}).join('');
+   det.querySelector('.dextra').innerHTML=(EXTRA[name]||[]).map(function(u){return '<img loading="lazy" src="'+u+'" alt="'+esc(name)+' poster">';}).join('');curPage=tile.closest('.page');det.querySelector('.back').innerHTML='&larr; '+(f.role==='TV'?'ALL TV':'ALL FILMS');curPage.style.display='none';det.hidden=false;window.scrollTo(0,0);
+ }
+ var curPage=null;function close(){det.hidden=true;if(curPage)curPage.style.display='';window.scrollTo(0,0);}
+ document.querySelectorAll('.poster[data-film]').forEach(function(p){p.addEventListener('click',function(){open(p);});});
+ det.querySelector('.back').addEventListener('click',close);
+ document.querySelectorAll('nav label').forEach(function(l){l.addEventListener('click',close);});
+})();
+</script>
+<script>
+(function(){
+ var det=document.getElementById('detail'),top_=det.querySelector('.dtop'),pos=det.querySelector('.dposter');
+ function layout(){
+   var g=det.querySelector('.castgrid');
+   var cards=Array.prototype.slice.call(g.querySelectorAll('.cast'));
+   var n=cards.length; if(!n)return;
+   var gap=Math.round(window.innerWidth*0.014), W=g.clientWidth;
+   var maxPer=Math.max(1,Math.floor((W+gap)/(130+gap)));
+   var tileW=Math.floor((W-gap*(maxPer-1))/maxPer);
+   var rows=Math.ceil(n/maxPer), base=Math.floor(n/rows), extra=n%rows;
+   var sig=n+'|'+maxPer+'|'+tileW;
+   var flat=g.querySelector(':scope > .cast');
+   if(!flat && g.dataset.sig===sig)return;
+   g.dataset.sig=sig; g.innerHTML=''; var k=0;
+   for(var r=0;r<rows;r++){
+     var row=document.createElement('div'); row.className='crow';
+     var c=base+(r<extra?1:0);
+     for(var j=0;j<c;j++){var el=cards[k++]; el.style.width=tileW+'px'; el.style.flex='0 0 '+tileW+'px'; row.appendChild(el);}
+     g.appendChild(row);
+   }
+ }
+ function fit(){
+   if(det.hidden)return;
+   layout();
+   top_.style.gridTemplateColumns='';
+   if(window.innerWidth<=900){pos.style.marginBottom='';return;}
+   var ph=det.querySelectorAll('.castgrid .cast .ph');if(!ph.length){pos.style.marginBottom='';return;}
+   var info=det.querySelector('.dinfo');
+   pos.style.marginBottom='0px';
+   var gap=info.getBoundingClientRect().bottom-ph[ph.length-1].getBoundingClientRect().bottom;
+   pos.style.marginBottom=Math.max(0,gap)+'px';
+ }
+ new MutationObserver(function(){requestAnimationFrame(fit);}).observe(det,{attributes:true,childList:true,subtree:true});
+ window.addEventListener('resize',fit);
+ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit);
+})();
+</script>
+<script>
+(function(){
+ var r=document.querySelector('.reel'),mo=r.querySelector('.mosaic'),srcs=[];
+ document.querySelectorAll('#films .poster img.real, #tv .poster img.real').forEach(function(i){srcs.push(i.src);});
+ var html='';for(var k=0;k<45;k++){html+='<div style="background-image:url('+srcs[(k*7)%srcs.length]+')"></div>';}
+ mo.innerHTML=html;
+ r.addEventListener('click',function(){
+   var id=r.dataset.yt;
+   if(!id){r.classList.add('tapped');setTimeout(function(){r.classList.remove('tapped')},1800);return;}
+   var watch='https://www.youtube.com/watch?v='+id;
+   if(location.protocol==='file:'){window.open(watch,'_blank','noopener');return;}
+   var m=document.getElementById('modal'),f=m.querySelector('.frame');
+   f.innerHTML='<iframe src="https://www.youtube.com/embed/'+id+'?autoplay=1&rel=0&playsinline=1" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe><a class="ytlink" href="'+watch+'" target="_blank" rel="noopener">Not playing? Watch on YouTube &#8599;</a>';
+   m.classList.add('open');
+ });
+})();
+</script>
+<script>
+(function(){var f=document.querySelector('.cform');f.addEventListener('submit',function(e){
+ if(location.protocol==='file:'){e.preventDefault();f.querySelector('.fnote').textContent='The form will send once the site is live on Netlify.';}
+});})();
+</script>
+<div class="lb" id="lb"><img loading="lazy" alt=""><div class="lcap"></div></div>
+<script>
+var BTS=[
+ {"film": "The Expendables 2", "cap": "", "img": "img/7dc25f36c158.jpg"},
+ {"film": "The Expendables 2", "cap": "", "img": "img/827799ae9b42.jpg"},
+ {"film": "The Expendables 2", "cap": "", "img": "img/52c754474a08.jpg"},
+ {"film": "The Expendables 2", "cap": "", "img": "img/5a4bf50dd851.jpg"},
+ {"film": "The Expendables 2", "cap": "", "img": "img/6281dd8d9163.jpg"},
+ {"film": "The Expendables 2", "cap": "", "img": "img/9c26da7bf1fb.jpg"},
+ {"film": "The Expendables 2", "cap": "", "img": "img/0b74ebd8190a.jpg"},
+ {"film": "The Expendables 2", "cap": "", "img": "img/966c712856ce.jpg"},
+ {"film": "Lara Croft: Tomb Raider", "cap": "", "img": "img/ef2ee27b0daa.jpg"},
+ {"film": "Lara Croft: Tomb Raider", "cap": "", "img": "img/31683ef8238e.jpg"},
+ {"film": "Lara Croft: Tomb Raider", "cap": "", "img": "img/5c13d663e843.jpg"},
+ {"film": "Lara Croft: Tomb Raider", "cap": "", "img": "img/00e554901b88.jpg"},
+ {"film": "Lara Croft: Tomb Raider", "cap": "", "img": "img/2708ba8a6db3.jpg"},
+ {"film": "Lara Croft: Tomb Raider", "cap": "", "img": "img/84b38aac76fa.jpg"},
+ {"film": "Lara Croft: Tomb Raider", "cap": "", "img": "img/20459d1ec561.jpg"},
+ {"film": "Lara Croft: Tomb Raider", "cap": "", "img": "img/0c84db9a90da.jpg"},
+ {"film": "Lara Croft: Tomb Raider", "cap": "", "img": "img/771d78ad5c31.jpg"},
+ {"film": "Lara Croft: Tomb Raider", "cap": "", "img": "img/83a0715afeeb.jpg"},
+ {"film": "Lara Croft: Tomb Raider", "cap": "", "img": "img/6e2f40965960.jpg"},
+ {"film": "Lara Croft: Tomb Raider", "cap": "", "img": "img/793752efd9ab.jpg"},
+ {"film": "Lara Croft: Tomb Raider", "cap": "", "img": "img/d7ec234ec0d6.jpg"},
+ {"film": "Lara Croft: Tomb Raider", "cap": "", "img": "img/d3f77b5cb758.jpg"},
+ {"film": "Con Air", "cap": "", "img": "img/76fc5b108149.jpg"},
+ {"film": "Con Air", "cap": "", "img": "img/0dee21efcb48.jpg"},
+ {"film": "Con Air", "cap": "", "img": "img/303faad9b3f7.jpg"},
+ {"film": "Con Air", "cap": "", "img": "img/a69e1d23709a.jpg"},
+ {"film": "Con Air", "cap": "", "img": "img/8aa374306d83.jpg"},
+ {"film": "Con Air", "cap": "", "img": "img/c515336bd010.jpg"},
+ {"film": "Con Air", "cap": "", "img": "img/cf5b0a506121.jpg"},
+ {"film": "The General's Daughter", "cap": "", "img": "img/e0bb14ecbb35.jpg"},
+ {"film": "The Mechanic", "cap": "", "img": "img/d1201a993bec.jpg"},
+ {"film": "The Mechanic", "cap": "", "img": "img/13d335475699.jpg"},
+ {"film": "The Mechanic", "cap": "", "img": "img/e48e3ff4648b.jpg"},
+ {"film": "The Mechanic", "cap": "", "img": "img/518640ece44e.jpg"},
+ {"film": "The Mechanic", "cap": "", "img": "img/f9e17d93ef80.jpg"},
+ {"film": "The Mechanic", "cap": "", "img": "img/cb57f5c79743.jpg"},
+ {"film": "When a Stranger Calls", "cap": "", "img": "img/9080d5629045.jpg"},
+ {"film": "When a Stranger Calls", "cap": "", "img": "img/ca1b39ab623e.jpg"},
+ {"film": "When a Stranger Calls", "cap": "", "img": "img/c3fbc6a248a3.jpg"},
+ {"film": "Fortitude", "cap": "", "img": "img/80affdddfdfb.jpg"},
+];
+(function(){
+ var g=document.querySelector('.btsgrid'),lb=document.getElementById('lb');
+ function esc(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML;}
+ g.innerHTML=BTS.map(function(b,i){
+  return '<div class="bt'+(b.img?' has':'')+'" data-i="'+i+'">'+(b.img?'<img loading="lazy" src="'+b.img+'" alt="">':'<div class="ph">PHOTO COMING SOON</div>')+
+   '<div class="cap"><div class="f">'+esc(b.film.toUpperCase())+'</div>'+(b.cap?'<div class="t">'+esc(b.cap)+'</div>':'')+'</div></div>';
+ }).join('');
+ g.addEventListener('click',function(e){var t=e.target.closest('.bt.has');if(!t)return;var b=BTS[+t.dataset.i];
+  lb.querySelector('img').src=b.img;lb.querySelector('.lcap').textContent=b.film+(b.cap?' \u2014 '+b.cap:'');lb.classList.add('open');});
+ lb.addEventListener('click',function(){lb.classList.remove('open');});
+ document.addEventListener('keydown',function(e){if(e.key==='Escape')lb.classList.remove('open');});
+})();
+</script>
+</body>
+</html>
