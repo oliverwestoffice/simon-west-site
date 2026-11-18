@@ -294,17 +294,6 @@
             <div class="addr">10585 Santa Monica Blvd.<br>Los Angeles, CA 90025</div>
           </div>
         </div>
-        <form class="cform" name="contact">
-          <div class="ftitle">SEND A MESSAGE</div>
-          <div class="frow">
-            <label><span>First Name *</span><input name="first-name" required></label>
-            <label><span>Last Name *</span><input name="last-name" required></label>
-          </div>
-          <label><span>Email *</span><input type="email" name="email" required></label>
-          <label><span>Message *</span><textarea name="message" rows="6" required></textarea></label>
-          <button type="submit">SEND</button>
-          <div class="fnote"></div>
-        </form>
         <div class="policy">
           <div class="ptitle">UNSOLICITED SUBMISSIONS POLICY</div>
           <p>Simon West Films has a policy that neither it nor any of its agents or other employees shall accept or consider any unsolicited material, ideas or suggestions of any nature whatsoever (&ldquo;Unsolicited Materials&rdquo;). Please be advised that the Unsolicited Materials will not be considered by anyone at Simon West Films, and if possible they will be returned to you with no copies kept. Unsolicited Materials will not be forwarded to or discussed with any third parties.</p>
@@ -463,16 +452,6 @@
    m.classList.add('open');
  });
 })();
-</script>
-<script>
-(function(){var f=document.querySelector('.cform');f.addEventListener('submit',function(e){
- e.preventDefault();
- var v=function(n){return f.elements[n].value.trim();};
- var name=v('first-name')+' '+v('last-name');
- var body='Name: '+name+'\nEmail: '+v('email')+'\n\n'+v('message');
- location.href='mailto:RLeader.swp@gmail.com?subject='+encodeURIComponent('Website enquiry from '+name)+'&body='+encodeURIComponent(body);
- f.querySelector('.fnote').textContent='Your email app should open with the message ready to send.';
-});})();
 </script>
 <div class="lb" id="lb"><img loading="lazy" alt=""><div class="lcap"></div></div>
 <script>
